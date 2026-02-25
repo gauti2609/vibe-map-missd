@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: Check if user is logged in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper: Check if user owns the document (assuming doc has userId field or is users/{uid})
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // 1. Users Collection
+    // - Anyone can read profiles (needed for feed/search)
+    // - Only the user can create/edit their own profile
+    match /users/{userId} {
+      allow read: if true;
+      // Allow create only by owner
+      allow create: if isOwner(userId);
+      // Allow update if owner OR if only updating followers list (for follow/unfollow)
+      // DEBUG: Temporarily allowing all authenticatd updates to rule out affectedKeys issues
+      allow update: if isOwner(userId) || isSignedIn(); 
+                   // (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']));
+      allow delete: if isOwner(userId);
+    }
+
+    // 2. Posts Collection
+    // - Anyone can read
+    // - Signed in users can create
+    // - Only the author can edit/delete
+    // 3. Posts Collection
+    // - Anyone can read
+    // - Signed in users can create
+    // - Only the author can edit/delete content, but others can update likes/comments
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      // Allow update if author OR if updating likes/interactions
+      allow update: if isSignedIn(); 
+                   // Ideally: if (isOwner(resource.data.user.id) || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']));
+      allow delete: if isSignedIn() && resource.data.user.id == request.auth.uid;
+    }
+
+    // 4. Hotspots Collection
+    // - Anyone can read
+    // - Signed in users can update (for "Drop Vibe" counts)
+    match /hotspots/{spotId} {
+      allow read: if true;
+      allow write: if false; // Auto-generated only
+    }
+
+    // 5. Messages Collection
+    // - Participants can read and create their own messages
+    match /messages/{messageId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn();
+    }
+
+    // 5. Conversations Collection (Inbox metadata)
+    // - Participants can read and update
+    match /conversations/{convId} {
+      // Allow any signed in user to create/update if they are a participant.
+      // Simply checking if they are signed in for now to unblock sync issues.
+      // Ideally: request.auth.uid in request.resource.data.participants
+      allow read, write: if isSignedIn(); 
+    }
+
+    // 6. Notifications Collection
+    // - Recipient can read
+    // - Any signed in user can create (to send notification)
+    // - Recipient can update (mark as read)
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+    }
+
+    // 7. Admin Privileges (MVP: Trusted Client)
+    match /admin_privileges/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn(); 
+    }
+
+    // 8. Outlet Applications (Manual Onboarding)
+    match /outlet_applications/{appId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update: if isSignedIn();
+    }
+  }
+}

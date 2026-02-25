@@ -1,0 +1,13 @@
+Fetching users...
+User: LkKOCi8lSIT8B2gYoUHkMu0r8Dl2 (Gautam Mishra)
+  - Followers: ["STkR607SRFbsC4gkALle30tZKoJ3"]
+  - Following: ["nbwm6FXSkSSo8MwL8R8TiP0rrOa2"]
+-----------------------------------
+User: STkR607SRFbsC4gkALle30tZKoJ3 (Gautam Mishra)
+  - Followers: []
+  - Following: ["LkKOCi8lSIT8B2gYoUHkMu0r8Dl2","nbwm6FXSkSSo8MwL8R8TiP0rrOa2"]
+-----------------------------------
+User: nbwm6FXSkSSo8MwL8R8TiP0rrOa2 (gautam mishra)
+  - Followers: ["STkR607SRFbsC4gkALle30tZKoJ3","LkKOCi8lSIT8B2gYoUHkMu0r8Dl2"]
+  - Following: []
+-----------------------------------
