@@ -1,0 +1,21 @@
+{
+  "short_name": "VibeMap",
+  "name": "VibeMap Social",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1514525253440-b39345208668?auto=format&fit=crop&q=80&w=192&h=192",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1514525253440-b39345208668?auto=format&fit=crop&q=80&w=512&h=512",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1a103c",
+  "background_color": "#0f0a24",
+  "orientation": "portrait"
+}
